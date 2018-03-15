@@ -42,7 +42,14 @@ if __name__ == "__main__":
     parser.add_argument('-help',action="store_true",help="print this help")
     args=parser.parse_args()
     if args.set:
-        station=args.set
+        if args.set in stations:
+            station=args.set
+        else:
+            sys.stderr.write("Selected set not in defined sets! Add your set to the sourcecode or choose from existing:"+bcolors.WARNING)
+            for k,v in stations.items():
+                sys.stderr.write(" "+str(k))
+            sys.stderr.write("\n")
+            exit(-1)
     args=parser.parse_args()
     if args.help:
         parser.print_help(sys.stderr)
@@ -52,13 +59,7 @@ if __name__ == "__main__":
         lines=shutil.get_terminal_size((85,25)).lines
         if lines%2==0:
             lines-=1
-        rows=shutil.get_terminal_size((85,25)).columns
         num=int(lines/len(stations[station]))
-        #if num==shutil.get_terminal_size((80,25)).lines/len(stations[station]):
-            #num-=2
-        #else:
-            #num-=1
-        #call("clear")
         sys.stdout.write("\x1B[H\x1B[J")
         sys.stdout.write(bcolors.OKGREEN+"{:<30s}{:<13s}{:<30s}{:>7s}".format("Haltestelle","Linie","Richtung","Ankunft")+bcolors.ENDC)
         table=[]
@@ -67,9 +68,4 @@ if __name__ == "__main__":
             for elem in dvb.monitor(street,1,num-1,"Dresden"):
                 sys.stdout.write("\n{:<30s}".format(street)+bcolors.YELLOW+"{:<13s}".format(elem["line"])+bcolors.ENDC+"{:<30s}".format(elem["direction"])+"{:>7d}".format(elem["arrival"]))
         sleep(10)
-        #table.append((street,elem["line"],elem["direction"],elem["arrival"]))
-            
-#        for st, li, di,ar in sorted(table,key=lambda x: x[3]):
-        #for st, li, di,ar in table:
-        #    sys.stdout.write("\n{:<30s}".format(st)+bcolors.YELLOW+"{:<13s}".format(li)+bcolors.ENDC+"{:<30s}".format(di)+"{:>7d}".format(ar))
         
