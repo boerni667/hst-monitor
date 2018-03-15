@@ -25,7 +25,7 @@ class bcolors:
     UNDERLINE = '\033[4m'
 ### don't mess up terminal by SIGINT or CTRL^C
 def signal_handler(signal,frame):
-    rows, columns = os.popen('stty size','r').read().split()
+    lines=shutil.get_terminal_size((85,25)).lines
     num=int(shutil.get_terminal_size((80,25)).lines/len(streets))
     for i in range(0,num*len(streets)):
         print("")
@@ -49,8 +49,13 @@ if __name__ == "__main__":
         sys.stdout.write(bcolors.OKGREEN+"{:<30s}{:<13s}{:<30s}{:>7s}".format("Haltestelle","Linie","Richtung","Ankunft")+bcolors.ENDC)
         table=[]
         for street in streets:
-            for elem in dvb.monitor(street,1,num,"Dresden"):
-                table.append((street,elem["line"],elem["direction"],elem["arrival"]))
-        for st, li, di,ar in sorted(table,key=lambda x: x[3]):
-            sys.stdout.write("\n{:<30s}".format(st)+bcolors.YELLOW+"{:<13s}".format(li)+bcolors.ENDC+"{:<30s}".format(di)+"{:>7d}".format(ar))     
+            sys.stdout.write("\n")
+            for elem in dvb.monitor(street,1,num-1,"Dresden"):
+                sys.stdout.write("\n{:<30s}".format(street)+bcolors.YELLOW+"{:<13s}".format(elem["line"])+bcolors.ENDC+"{:<30s}".format(elem["direction"])+"{:>7d}".format(elem["arrival"]))
         sleep(10)
+        #table.append((street,elem["line"],elem["direction"],elem["arrival"]))
+            
+#        for st, li, di,ar in sorted(table,key=lambda x: x[3]):
+        #for st, li, di,ar in table:
+        #    sys.stdout.write("\n{:<30s}".format(st)+bcolors.YELLOW+"{:<13s}".format(li)+bcolors.ENDC+"{:<30s}".format(di)+"{:>7d}".format(ar))
+        
