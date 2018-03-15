@@ -29,10 +29,8 @@ class bcolors:
     UNDERLINE = '\033[4m'
 ### don't mess up terminal by SIGINT or CTRL^C
 def signal_handler(signal,frame):
-    lines=shutil.get_terminal_size((85,25)).lines
-    num=int(shutil.get_terminal_size((80,25)).lines/len(stations[station]))
-    for i in range(0,num*len(stations[station])):
-        print("")
+    call(["tput","cnorm"])
+    print("")
     sys.exit(0)
 
 
@@ -55,6 +53,7 @@ if __name__ == "__main__":
         parser.print_help(sys.stderr)
         exit()
     signal.signal(signal.SIGINT,signal_handler)
+    call(["tput","civis"])
     while True:
         lines=shutil.get_terminal_size((85,25)).lines
         if lines%2==0:
